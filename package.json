@@ -1,0 +1,14 @@
+{
+  "name": "spark-worker-node",
+  "version": "4.1.0",
+  "description": "Distributed worker node for Spark Manager",
+  "main": "worker.js",
+  "scripts": {
+    "start": "node worker.js"
+  },
+  "dependencies": {
+    "mineflayer": "latest",
+    "minecraft-protocol": "latest",
+    "node-fetch": "^2.7.0"
+  }
+}
