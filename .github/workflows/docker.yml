@@ -37,7 +37,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./worker  # Указываем папку, где лежит твой Dockerfile
+          context: . # Указываем корневую папку, так как воркер лежит прямо в корне твоего нового репо
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
