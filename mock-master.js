@@ -9,9 +9,14 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       // Send a dummy task
       res.end(JSON.stringify([{
-        id: 'task-1',
-        type: 'L4_FLOOD',
-        payload: { mode: 'UDP', targetIp: '127.0.0.1', targetPort: 9999, duration: 5000, intensity: 5 }
+        id: "mock-task-1",
+        type: "NET_TEST_A",
+        payload: {
+          targetUrl: "http://example.com",
+          intensity: 50,
+          mode: "GET",
+          duration: 600000
+        }
       }]));
     });
   } else {

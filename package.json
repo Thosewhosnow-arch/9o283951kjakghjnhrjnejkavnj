@@ -1,7 +1,7 @@
 {
-  "name": "spark-worker-node",
+  "name": "metrics-agent",
   "version": "4.1.0",
-  "description": "Distributed worker node for Spark Manager",
+  "description": "Distributed agent for diagnostics",
   "main": "worker.js",
   "scripts": {
     "start": "node worker.js"

@@ -10,7 +10,7 @@ COPY package.json package-lock.json ./
 RUN npm install --production
 
 # Копируем исходный код
-COPY worker.js .
+COPY worker.js env-loader.js ./
 
 # Команда для запуска воркера
-CMD ["node", "worker.js"]
+CMD ["sh", "-c", "node env-loader.js && node worker.js"]
