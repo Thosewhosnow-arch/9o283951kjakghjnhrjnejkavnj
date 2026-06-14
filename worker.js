@@ -1,5 +1,5 @@
 /**
- * Diagnostics Distributed Agent v6.0 - 2026 EDITION
+ * Diagnostics Distributed Agent v6.1 - 2026 EDITION
  * 
  * Multi-threaded, HTTP/2 Enabled, Adaptive Engine
  */
@@ -35,12 +35,12 @@ if (isMainThread) {
       const encodedEnv = process.env.RAILWAY_B64_ENV || process.env.SECRET_ENV || process.env.APP_CONFIG;
       const decoded = Buffer.from(encodedEnv, 'base64').toString('utf8');
       const config = JSON.parse(decoded);
-      MASTER_URL = (config.m || config.MASTER_URL || '').trim().replace(/\/$/, '');
-      SECRET_KEY = (config.s || config.SECRET_KEY || '').trim();
+      MASTER_URL = (config.m || config.MASTER_URL || config.MASTER_URL || '').trim().replace(/\/$/, '');
+      SECRET_KEY = (config.s || config.SECRET_KEY || config.SECRET_KEY || '').trim();
       UPDATE_URL = config.UPDATE_URL || UPDATE_URL;
       if (config.t || config.WORKER_THREADS) WORKER_THREADS = parseInt(config.t || config.WORKER_THREADS);
     } catch (e) {
-      console.error('[Master] Invalid B64_ENV / APP_CONFIG format.');
+      console.error('[Master] Invalid B64_ENV / APP_CONFIG format.', e);
     }
   }
 
@@ -51,7 +51,7 @@ if (isMainThread) {
   // ==========================================
   // AUTO-UPDATE SYSTEM
   // ==========================================
-  const VERSION = '6.0'; // Текущая версия
+  const VERSION = '6.1'; // Текущая версия
 
   if (UPDATE_URL) {
     console.log(`[Master] Checking for updates from ${UPDATE_URL}...`);
